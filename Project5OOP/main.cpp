@@ -1,85 +1,162 @@
 #include <iostream>
 using namespace std;
+#include <string>
 
-class Fraction
+class Bankomat
 {
-	int chis;
-	int znam;
+	int BankId;
+	int MinCashOut;
+	int MaxCashOut;
+	int BankBalance;
 public:
-	Fraction();
-	Fraction(int cs, int zm);
-	void PrintFract();
-	void SetFract();
-	Fraction PlusFract(Fraction& b);
-	Fraction MinusFract(Fraction& b);
+	Bankomat();
+	Bankomat(int bid, int min, int max, int bbal);
+	void InitBankomat();
+	void CheckBankomat();
+	void CashIn();
+	void CashOut();
+	void CheckBankBal();
+	string BalToStr();
 };
 
-Fraction::Fraction()
+Bankomat::Bankomat()
 {
-	chis = 0;
-	znam = 1;
+	BankId = 0;
+	MinCashOut = 0;
+	MaxCashOut = 0;
+	BankBalance = 0;
 }
 
-Fraction::Fraction(int cs, int zm)
+Bankomat::Bankomat(int bid, int min, int max, int bbal)
 {
-	chis = cs;
-	if (zm != 0)
+	if (bid > 0)
 	{
-		znam = zm;
-	}
-	else
-	{
-		znam = 1;
-	}
-}
-
-void Fraction::PrintFract()
-{
-	cout << chis << "/" << znam << endl;
-}
-
-void Fraction::SetFract()
-{
-	cout << "Enter chislitel: ";
-	cin >> chis;
-	cout << "\nEnter znamenatel: ";
-	cin >> znam;
-	while (znam == 0)
-	{
-		cin >> znam;
-		if (znam == 0)
+		BankId = bid;
+		MinCashOut = min;
+		if (max > min)
 		{
-			cout << "Znamenatel ne raven 0"<<endl;
+			MaxCashOut = max;
+		}
+		else
+		{
+			MaxCashOut = min;
+		}
+		BankBalance = bbal;
+	}
+}
+
+void Bankomat::InitBankomat()
+{
+	cout << "\n\t|----------Initialization Bankomat----------|"<<endl
+		<< "Enter Bankomat id -> ";
+	cin >> BankId;
+	cout<< "Enter Minimal Cash Out amount -> ";
+	cin >> MinCashOut;
+	cout << "Enter Maximum Cash Out amount -> ";
+	cin >> MaxCashOut;
+	cout << "Enter Bankomat balance -> ";
+	cin >> BankBalance;
+	while (BankId < 0 || MinCashOut <= 0 || MinCashOut % 10 != 0 || MaxCashOut % 10 != 0 || MaxCashOut <= 0 || MaxCashOut < MinCashOut || BankBalance < 0 || BankBalance % 10 != 0)
+	{
+		if (BankId < 0)
+		{
+			cout<< "\t!!!!!Bankomat id can't be negative!!!!! \nEnter Bankomat id -> ";
+			cin >> BankId;
+		}
+		if (MinCashOut <= 0 || MinCashOut % 10 != 0)
+		{
+			cout << "\t!!!!!Bankomat Minimal Cash Out amount must be more than 0 and multiple of 10!!!!!. \nEnter Minimal Cash Out amount -> ";
+			cin >> MinCashOut;
+		}
+		if (MaxCashOut <= 0 || MaxCashOut % 10 != 0 || MaxCashOut<MinCashOut)
+		{
+			cout << "\t!!!!!Bankomat Maximum Cash Out amount must be more than 0 and Minimal Cash Out and multiple of 10!!!!!. \nEnter Maximum Cash Out amount -> ";
+			cin >> MaxCashOut;
+		}
+		if (BankBalance < 0 || BankBalance % 10 != 0)
+		{
+			cout << "\t!!!!!Bankomat Balance can't be negative and must be a multiple of 10!!!!!. \nEnter Bankomat balance -> ";
+			cin >> BankBalance;
 		}
 	}
-
+	cout << endl;
 }
 
-Fraction Fraction::PlusFract(Fraction& b)
+void Bankomat::CheckBankomat()
 {
-	Fraction result;
-	result.chis = chis*b.znam + b.chis*znam;
-	result.znam = znam * b.znam;
-	return result;
+	cout << "\n\t|----------SHOW BANKOMAT INFO----------|" << endl
+ 		<< "BankId: " <<BankId<< endl
+		<< "Minimal Cash out: " <<MinCashOut<< endl
+		<< "Maximum Cash out: " <<MaxCashOut<< endl
+		<< "Bankomat balance: " <<BankBalance<< endl;
 }
 
-Fraction Fraction::MinusFract(Fraction& b)
+void Bankomat::CashIn()
 {
-	Fraction result;
-	result.chis = chis * b.znam - b.chis * znam;
-	result.znam = znam * b.znam;
-	return result;
+	int sum;
+	cout << "\n\t|----------BANKOMAT CASH IN----------|"<<"\nEnter sum that you want cash In -> ";
+	cin >> sum;
+	while (sum < 10 || sum % 10 != 0)
+	{
+		cout << "\t!!!!!Sum can't be negative and must be a multiple of 10!!!!!. \nEnter sum that you want cash In -> ";
+		cin >> sum;
+	}
+	BankBalance += sum;
+	cout << "\tCash in was successful\n";
+}
+
+void Bankomat::CashOut()
+{
+	int sum;
+	cout << "\n\t|----------BANKOMAT CASH OUT----------|" << "\nEnter sum that you want cash out -> ";
+	cin >> sum;
+	while (sum < 10 || sum % 10 != 0 || sum<MinCashOut || sum>MaxCashOut || sum>BankBalance)
+	{
+		if (sum < 10 || sum % 10 != 0)
+		{
+			cout << "\t!!!!!Sum can't be negative and must be a multiple of 10!!!!!. \nEnter sum that you want cash out -> ";
+			cin >> sum;
+		}
+		else if (sum < MinCashOut)
+		{
+			cout << "\t!!!!!Sum must be more than Minimal Cash out -> " << MinCashOut <<" UAH . !!!!!" <<"\nEnter sum that you want cash out -> ";
+			cin >> sum;
+		}
+		else if (sum > MaxCashOut)
+		{
+			cout << "\t!!!!!Sum must be less than Maximum Cash out -> " << MaxCashOut << " UAH . !!!!!" << "\nEnter sum that you want cash out -> ";
+			cin >> sum;
+		}
+		else
+		{
+			cout << "\t!!!!!Bankomat doesn't have enough money. Available balance -> " << BankBalance << " UAH . !!!!!" << "\nEnter sum that you want cash out -> ";
+			cin >> sum;
+		}
+	}
+	BankBalance -= sum;
+	cout << "\tCash out was successful\n";
+}
+
+void Bankomat::CheckBankBal()
+{
+	cout << "\n\t|----------SHOW BANKOMAT BALANCE----------|" << endl
+		<< "\tBankomat balance: " << BankBalance << endl;
+}
+
+string Bankomat::BalToStr()
+{
+	string balance = to_string(BankBalance);
+	return balance;
 }
 
 int main()
 {
-	Fraction obj1;
-	obj1.SetFract();
-	Fraction obj2;
-	obj2.SetFract();
-	Fraction obj3 = obj1.PlusFract(obj2);
-	obj3.PrintFract();
-	obj3 = obj1.MinusFract(obj2);
-	obj3.PrintFract();
-
+	Bankomat ban1;
+	ban1.InitBankomat();
+	ban1.CheckBankomat();
+	ban1.CashIn();
+	ban1.CheckBankBal();
+	ban1.CashOut();
+	ban1.CheckBankBal();
+	cout <<"\n\t String balance ->"<< ban1.BalToStr();
 }
